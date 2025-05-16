@@ -29,12 +29,14 @@ def get_animal_data(data):
             animal_diet = animal["characteristics"]["diet"]
             animal_type = animal["characteristics"]["type"]
 
-            output += f'<li class="cards__item">'
-            output += f"Name: {animal_name}<br/>\n"
-            output += f"Diet: {animal_diet}<br/>\n"
-            output += f"Location: {animal_locations[0]}<br/>\n"
-            output += f"Type: {animal_type}<br/>\n"
-            output += f"</li>"
+            output += f'<li class="cards__item">\n'
+            output += f'<div class="card__title">{animal_name}</div>\n'
+            output += f'<p class="card__text">'
+            output += f'<strong>Diet:</strong> {animal_diet}<br/>\n'
+            output += f'<strong>Location:</strong> {animal_locations[0]}<br/>\n'
+            output += f'<strong>Type:</strong> {animal_type}<br/>\n'
+            output += f'</p>\n'
+            output += f'</li>\n'
 
     return output
 
