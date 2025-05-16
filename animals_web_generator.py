@@ -1,4 +1,5 @@
 import json
+import re
 
 def load_data(filepath):
     with open(filepath, "r") as handle:
@@ -28,24 +29,31 @@ def get_animal_data(data):
             animal_diet = animal["characteristics"]["diet"]
             animal_type = animal["characteristics"]["type"]
 
-            output += f"Name: {animal_name} \n"
-            output += f"Diet: {animal_diet} \n"
-            output += f"Location: {animal_locations[0]} \n"
-            output += f"Type: {animal_type}\n\n"
+            output += f'<li class="cards__item">'
+            output += f"Name: {animal_name}<br/>\n"
+            output += f"Diet: {animal_diet}<br/>\n"
+            output += f"Location: {animal_locations[0]}<br/>\n"
+            output += f"Type: {animal_type}<br/>\n"
+            output += f"</li>"
 
     return output
 
-def read_html(filepath):
-    with open(filepath, "r") as html_file:
-        html_as_string = html_file.read()
-        return html_as_string
 
-def replace_and_rewrite_html(filepath, html_code, replace_string):
-    existing_html = html_code
-    new_html = existing_html.replace("__REPLACE_ANIMALS_INFO__", replace_string)
+def read_and_replace_html(filepath, new_animal_data):
+    with open(filepath, "r") as html_file:
+        html = html_file.read() #read as string
+
+    # Define the pattern to match everything between the markers (non-greedy)
+    pattern = r"<!-- ANIMALS_INFO_START -->(.*?)<!-- ANIMALS_INFO_END -->"
+
+    # Format the new replacement block
+    replacement = f"<!-- ANIMALS_INFO_START -->\n{new_animal_data}\n<!-- ANIMALS_INFO_END -->"
+
+    # Replace the old content with the new block
+    updated_html = re.sub(pattern, replacement, html, flags=re.DOTALL)
 
     with open(filepath, "w") as new_html_code:
-        new_html_code.write(new_html)
+        new_html_code.write(updated_html)
 
 
 #call & load data and save to animals_data
@@ -54,8 +62,5 @@ animals_data = load_data("animals_data.json")
 #print animal data function
 animal_data_output = get_animal_data(animals_data)
 
-#save html code of animals_template.html to animals_template_html
-animals_template_html = read_html("animals_template.html")
 
-
-replace_and_rewrite_html("animals_template.html", animals_template_html, animal_data_output)
+read_and_replace_html("animals_template.html", animal_data_output)
