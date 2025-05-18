@@ -6,10 +6,30 @@ def load_data(filepath):
         return json.load(handle)
 
 
+def serialize_animal(animal_obj):
+    """
+    html output structure.
+    """
+    animal_name = animal_obj["name"]
+    animal_locations = animal_obj["locations"]
+    animal_diet = animal_obj["characteristics"]["diet"]
+    animal_type = animal_obj["characteristics"]["type"]
+
+    output = ''
+    output += f'<li class="cards__item">\n'
+    output += f'<div class="card__title">{animal_name}</div>\n'
+    output += f'<p class="card__text">'
+    output += f'<strong>Diet:</strong> {animal_diet}<br/>\n'
+    output += f'<strong>Location:</strong> {animal_locations[0]}<br/>\n'
+    output += f'<strong>Type:</strong> {animal_type}<br/>\n'
+    output += f'</p>\n'
+    output += f'</li>\n'
+    return output
+
 def get_animal_data(data):
     """
     check first if key which we are looking for exit or not
-    then print the value
+    then call the serialize_animal function to print data on html
     """
     output = ""
     for animal in data:
@@ -24,24 +44,18 @@ def get_animal_data(data):
             continue
 
         if has_name and has_locations and has_diet and has_type:
-            animal_name = animal["name"]
-            animal_locations = animal["locations"]
-            animal_diet = animal["characteristics"]["diet"]
-            animal_type = animal["characteristics"]["type"]
-
-            output += f'<li class="cards__item">\n'
-            output += f'<div class="card__title">{animal_name}</div>\n'
-            output += f'<p class="card__text">'
-            output += f'<strong>Diet:</strong> {animal_diet}<br/>\n'
-            output += f'<strong>Location:</strong> {animal_locations[0]}<br/>\n'
-            output += f'<strong>Type:</strong> {animal_type}<br/>\n'
-            output += f'</p>\n'
-            output += f'</li>\n'
+            output += serialize_animal(animal) #call function
 
     return output
 
 
 def read_and_replace_html(filepath, new_animal_data):
+    """
+    first read html as a string
+    check for comment on html page
+    replace comment with the new_animal_data
+    rewrite html with the replaced one
+    """
     with open(filepath, "r") as html_file:
         html = html_file.read() #read as string
 
@@ -58,11 +72,16 @@ def read_and_replace_html(filepath, new_animal_data):
         new_html_code.write(updated_html)
 
 
-#call & load data and save to animals_data
-animals_data = load_data("animals_data.json")
+def main():
+    #call & load data and save to animals_data
+    animals_data = load_data("animals_data.json")
 
-#print animal data function
-animal_data_output = get_animal_data(animals_data)
+    #print animal data function
+    animal_data_output = get_animal_data(animals_data)
+
+    #calling function to replace html card with a animal data from the json
+    read_and_replace_html("animals_template.html", animal_data_output)
 
 
-read_and_replace_html("animals_template.html", animal_data_output)
+if __name__ == "__main__":
+    main()
