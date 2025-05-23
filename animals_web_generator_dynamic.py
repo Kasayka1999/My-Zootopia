@@ -59,13 +59,17 @@ def read_and_replace_html(filepath, new_animal_data):
     with open(filepath, "r") as html_file:
         html = html_file.read() #read as string
 
-        replaced = html.replace("__REPLACE_ANIMALS_INFO__", f"{new_animal_data}")
+    # Define the pattern to match everything between the markers (non-greedy)
+    pattern = r"<!-- ANIMALS_INFO_START -->(.*?)<!-- ANIMALS_INFO_END -->"
 
-    with open("animals.html", "w") as html_file:
-        html = html_file.write(replaced)
+    # Format the new replacement block
+    replacement = f"<!-- ANIMALS_INFO_START -->\n{new_animal_data}\n<!-- ANIMALS_INFO_END -->"
 
+    # Replace the old content with the new block
+    updated_html = re.sub(pattern, replacement, html, flags=re.DOTALL)
 
-
+    with open(filepath, "w") as new_html_code:
+        new_html_code.write(updated_html)
 
 
 def main():
@@ -76,7 +80,7 @@ def main():
     animal_data_output = get_animal_data(animals_data)
 
     #calling function to replace html card with a animal data from the json
-    read_and_replace_html("animals_template.html", animal_data_output)
+    read_and_replace_html("animals_template_dynamic.html.html", animal_data_output)
 
 
 if __name__ == "__main__":
