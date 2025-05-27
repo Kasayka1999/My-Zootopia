@@ -80,7 +80,7 @@ def main():
     animal_data_output = get_animal_data(animals_data)
 
     #calling function to replace html card with a animal data from the json
-    read_and_replace_html("animals_template_dynamic.html.html", animal_data_output)
+    read_and_replace_html("MAINTENANCE_animals_template_dynamic.html.html", animal_data_output)
 
 
 if __name__ == "__main__":

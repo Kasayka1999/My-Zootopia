@@ -1,10 +1,4 @@
-import json
-import re
-
-def load_data(filepath):
-    with open(filepath, "r") as handle:
-        return json.load(handle)
-
+import data_fetcher
 
 def serialize_animal(animal_obj):
     """
@@ -56,27 +50,39 @@ def read_and_replace_html(filepath, new_animal_data):
     replace comment with the new_animal_data
     rewrite html with the replaced one
     """
+    new_file_name = 'animals.html'
     with open(filepath, "r") as html_file:
         html = html_file.read() #read as string
 
         replaced = html.replace("__REPLACE_ANIMALS_INFO__", f"{new_animal_data}")
 
-    with open("animals.html", "w") as html_file:
+    with open(new_file_name, "w") as html_file:
         html = html_file.write(replaced)
+        print(f"Website was successfully generated to the file {new_file_name}")
 
 
 
 
 
 def main():
-    #call & load data and save to animals_data
-    animals_data = load_data("animals_data.json")
+    get_animal_name = input("Enter a name of an animal: ")
 
-    #print animal data function
-    animal_data_output = get_animal_data(animals_data)
+    #call & load API to update data and save to animals_data
+    animals_data = data_fetcher.fetch_data(get_animal_name)
+    if animals_data:
+        # print animal data function
+        animal_data_output = get_animal_data(animals_data)
 
-    #calling function to replace html card with a animal data from the json
-    read_and_replace_html("animals_template.html", animal_data_output)
+        # calling function to replace html card with a animal data from the json
+        read_and_replace_html("animals_template.html", animal_data_output)
+    else:
+        no_animal_found_message = ''
+        no_animal_found_message += f'<li class="animal_not_exist">\n'
+        no_animal_found_message += f'<div class="card__title not_found_text"><center>The animal "{get_animal_name}" '
+        no_animal_found_message += f"doesn't exist.</center></div>\n"
+        no_animal_found_message += f'</li>\n'
+        read_and_replace_html("animals_template.html", no_animal_found_message)
+
 
 
 if __name__ == "__main__":
